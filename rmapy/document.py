@@ -178,7 +178,7 @@ class ZipDocument(object):
     rm: List[RmPage] = []
     ID = None
 
-    def __init__(self, _id=None, doc=None, file=None):
+    def __init__(self, _id=None, doc=None, file=None, parent=None):
         """Create a new instance of a ZipDocument
 
         Args:
@@ -212,6 +212,8 @@ class ZipDocument(object):
 
         if file:
             self.load(file)
+        if parent:
+            self.metadata["parent"] = parent
 
     def __str__(self) -> str:
         """string representation of this class"""
@@ -240,8 +242,12 @@ class ZipDocument(object):
         with ZipFile(file, "w", ZIP_DEFLATED) as zf:
             zf.writestr(f"{self.ID}.content",
                         json.dumps(self.content))
+
             zf.writestr(f"{self.ID}.pagedata",
                         self.pagedata)
+
+            zf.writestr(f"{self.ID}.metadata",
+                        json.dumps(self.metadata))
 
             if self.pdf:
                 zf.writestr(f"{self.ID}.pdf",
